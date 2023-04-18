@@ -1,0 +1,20 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "##### 1 npm 初始化 ``` npm init -y ``` 生成`pakage.json`文件 ##### 2 git 初始化 ``` git init  ``` 创建  `.gitignore`文件",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "koa": "^2.14.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
