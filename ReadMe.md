@@ -1,3 +1,5 @@
+> 这是一个渐进式的项目，建议跟着文档，一步一步渐进的实践
+
 #### 一、项目初始化
 
 ##### 1 npm 初始化
@@ -72,4 +74,92 @@ app.use((ctx, next) => {
 
 app.listen(APP_PORT, () => {
   console.log(`server is running on http://localhost:${APP_PORT}`);
-})```
+})
+```
+
+#### 四、添加路由
+根据不同的请求URL，调用对应的处理函数
+##### 1 安装koa-router
+```
+npm i koa-router
+```
+使用步骤：
+  1. 导入koa-router
+  2. 实例化router对象
+  3. 编写路由
+  4. 注册中间件
+##### 2 编写路由
+创建`src/router`目录，编写`user.route.js`文件
+```node
+const Router = require('koa-router')
+const router = new Router({prefix: '/users'})
+
+router.get('/',(ctx,next) => {
+  ctx.body = 'hi users!!!'
+})
+
+module.exports = router
+```
+##### 3 改写main.js
+```node
+const Koa = require('koa')
+const app = new Koa()
+const {APP_PORT} = require('./config/config.default')
+const userRouter = require('./router/user.route')
+
+app.use(userRouter.routes())
+
+app.listen(APP_PORT, () => {
+  console.log(`server is running on http://localhost:${APP_PORT}`);
+})
+```
+
+#### 五、目录结构优化
+##### 1 将http服务和app业务拆分
+创建 `src/app/index.js`
+```node
+const Koa = require('koa')
+const app = new Koa()
+
+const userRouter = require('../router/user.route')
+
+app.use(userRouter.routes())
+
+module.exports = app
+```
+改写`main.js`
+```node
+const {APP_PORT} = require('./config/config.default')
+const app = require('./app')
+
+app.listen(APP_PORT, () => {
+  console.log(`server is running on http://localhost:${APP_PORT}`);
+})
+```
+##### 2 将路由和控制器拆分
+路由： 解析URL，分布给控制器对应的方法
+控制器：处理不同的业务
+创建 `src/controller/user.controller.js`
+```node
+class UserController{
+  async register(ctx, next){
+    ctx.body = '用户注册成功！'
+  }
+  async login(ctx, next){
+    ctx.body = '用户登陆成功！'
+  }
+}
+module.exports = new UserController()
+```
+改写`user.route.js`
+```node
+const Router = require('koa-router')
+const router = new Router({prefix: '/user'})
+
+const {register, login} = require('../controller/use.controller')
+
+router.get('/register',register)
+router.get('/login',login)
+
+module.exports = router
+```
