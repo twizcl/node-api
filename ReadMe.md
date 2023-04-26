@@ -163,3 +163,53 @@ router.get('/login',login)
 
 module.exports = router
 ```
+
+#### 六、解析body
+##### 1 安装koa-body
+```nodejs
+npm i koa-body
+```
+##### 2 注册中间件
+改写app/index.js
+```javascript
+
+const Koa = require('koa')
+const { koaBody } = require('koa-body');
+const app = new Koa()
+
+const userRouter = require('../router/user.route')
+
+app.use(koaBody())
+app.use(userRouter.routes())
+
+module.exports = app
+```
+##### 3 解析请求数据
+改写controller/user.controller.js
+```node
+const { createUser } = require('../service/user.service')
+
+class UserController{
+  async register(ctx, next){
+    const { name, password } = ctx.request.body
+    const res = await createUser({name, password})
+    ctx.body = ctx.request.body
+  }
+  async login(ctx, next){
+    ctx.body = '用户登陆成功！'
+  }
+}
+
+module.exports = new UserController()
+```
+##### 4 拆分service层
+把数据库的操作逻辑拆分放在service层
+```node
+class UserService {
+  async createUser({name, password}){
+    //...数据库操作逻辑
+    return "用户数据写入成功"
+  }
+}
+module.exports = new UserService()
+```
